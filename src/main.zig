@@ -180,7 +180,6 @@ fn jit_compile(allocator: std.mem.Allocator, ops: []Op) !codef {
             },
             .Jump_If_Nonzero => {
 
-                // 0f84 c800 0000 jnz
                 try code_list.appendSlice(&[_]u8{ 0x48, 0x31, 0xc0 }); // xor rax, rax
                 try code_list.appendSlice(&[_]u8{ 0x8a, 0x07 }); // mov al , byte [rdi]
                 try code_list.appendSlice(&[_]u8{ 0x48, 0x85, 0xc0 }); // test rax ,rax
@@ -201,6 +200,7 @@ fn jit_compile(allocator: std.mem.Allocator, ops: []Op) !codef {
             },
         }
     }
+    try addrs.append(code_list.items.len);
     for (backpatches.items) |bp| {
         const src_addr: i32 = @intCast(addrs.items[bp.src_byte_addr + 1]);
         const dst_addr: i32 = @intCast(addrs.items[bp.dst_op_index]);
